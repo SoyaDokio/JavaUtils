@@ -1,4 +1,4 @@
-package com.foxconn.practice.myutil;
+package cn.soyadokio.java;
 
 import java.util.Base64;
 
