@@ -3,8 +3,8 @@ package cn.soyadokio.java;
 import java.util.*;
 
 // [From] https://github.com/shogo4405/KanaXS/
-public final class KanaUtil
-{
+public final class KanaUtil {
+
 	// 半角カタカナを全角カタカナにするマッピング
 	private static final Map<Character, Character> H2Z = new HashMap<Character, Character>();
 
@@ -14,8 +14,7 @@ public final class KanaUtil
 	/**
 	 * カナのタイプ保持用のEnum
 	 */
-	public static enum Type
-	{
+	public static enum Type {
 		HANKANA,
 		ZENKANA,
 		ZENALPH,
@@ -24,8 +23,7 @@ public final class KanaUtil
 		HANALPH
 	};
 
-	static
-	{
+	static {
 		// 半角カタカナを全角カタカナにするマッピング
 		H2Z.put('\uFF67','\u30A1');
 		H2Z.put('\uFF68','\u30A3');
@@ -142,29 +140,26 @@ public final class KanaUtil
 	 * コンストラクタ
 	 * ユーティリティクラスのためコンストラクタは、private
 	 */
-	private KanaUtil(){
+	private KanaUtil() {
 	};
 
 	/**
 	 * 全角カタカナを半角ｶﾀｶﾅに変換します。
 	 * @return 半角ｶﾀｶﾅ文字列
 	 */
-	public static String toHankanaCase(String str)
-	{
-		int i = 0;
+	public static String toHankanaCase(String str) {
 		int f = str.length();
 		char[] chars = {0xFF9E, 0xFF9F};
 		StringBuilder buffer = new StringBuilder();
 
-		for(;i<f;i++)
-		{
+		for (int i = 0; i < f; i++) {
 			char c = str.charAt(i);
 
-			if(Z2H.containsKey(c)){
+			if (Z2H.containsKey(c)){
 				buffer.append(Z2H.get(c));
-			} else if(0x30AB <= c && c <= 0x30C9){
+			} else if (0x30AB <= c && c <= 0x30C9){
 				buffer.append(Z2H.get((char)(c - 1))).append('\uFF9E');
-			} else if(0x30CF <= c && c <= 0x30DD) {
+			} else if (0x30CF <= c && c <= 0x30DD) {
 				buffer.append(Z2H.get((char)(c - c % 3))).append(chars[c % 3 - 1]);
 			} else {
 				buffer.append(c);
@@ -178,14 +173,12 @@ public final class KanaUtil
 	 * 半角カタカナを全角カタカナに変換します。
 	 * @return {String}
 	 */
-	public static String toZenkanaCase(String str)
-	{
+	public static String toZenkanaCase(String str) {
 		StringBuilder buffer = new StringBuilder(str);
 
-		for(int i=0;i<str.length();i++)
-		{
+		for (int i = 0; i < str.length(); i++) {
 			char c = str.charAt(i);
-			if(H2Z.containsKey(c)){
+			if(H2Z.containsKey(c)) {
 				buffer.setCharAt(i, H2Z.get(c));
 			};
 		};
@@ -197,15 +190,13 @@ public final class KanaUtil
 	 * 全角ひらがなを全角カタカナに変換します。
 	 * @return 全角カタカナ
 	 */
-	public static String toKatakanaCase(String str)
-	{
+	public static String toKatakanaCase(String str) {
 		StringBuilder buffer = new StringBuilder(str);
 
-		for(int i=0;i<str.length();i++)
-		{
+		for (int i = 0; i < str.length(); i++) {
 			char c = str.charAt(i);
-			if(0x3041 <= c && c <= 0x3096){
-				buffer.setCharAt(i, (char)(c + 0x0060));
+			if (0x3041 <= c && c <= 0x3096){
+				buffer.setCharAt(i, (char) (c + 0x0060));
 			};
 		};
 
@@ -216,15 +207,13 @@ public final class KanaUtil
 	 * 全角カタカナを全角ひらがなに変換します。
 	 * @return 全角ひらがなの文字列
 	 */
-	public static String toHiraganaCase(String str)
-	{
+	public static String toHiraganaCase(String str) {
 		StringBuilder buffer = new StringBuilder(str);
 
-		for(int i=0;i<str.length();i++)
-		{
+		for (int i = 0; i < str.length(); i++) {
 			char c = str.charAt(i);
-			if(0x30A1 <= c && c <= 0x30F6){
-				buffer.setCharAt(i, (char)(c - 0x0060));
+			if (0x30A1 <= c && c <= 0x30F6) {
+				buffer.setCharAt(i, (char) (c - 0x0060));
 			};
 		};
 
@@ -235,23 +224,19 @@ public final class KanaUtil
 	 * 全角英数字を半角英数字に変換します。
 	 * @return 半角英数字文字列
 	 */
-	public static String toHanalphCase(String str)
-	{
+	public static String toHanalphCase(String str) {
 		StringBuilder buffer = new StringBuilder(str);
 
-		for(int i=0;i<str.length();i++)
-		{
+		for (int i = 0; i < str.length(); i++) {
 			char c = str.charAt(i);
 
-			//　【！】～【～】の範囲
-			if(0xFF01 <= c && c <= 0xFF5E)
-			{
-				buffer.setCharAt(i, (char)(c - 0xFEE0));
+			// 【！】～【～】の範囲
+			if (0xFF01 <= c && c <= 0xFF5E) {
+				buffer.setCharAt(i, (char) (c - 0xFEE0));
 				continue;
 			};
 			// 全角スペース
-			if(c == 0x3000)
-			{
+			if (c == 0x3000) {
 				buffer.setCharAt(i, '\u0020');
 				continue;
 			};
@@ -264,24 +249,20 @@ public final class KanaUtil
 	 * 半角英数字を全角英数字に変換します。
 	 * @return 全角英数字
 	 */
-	public static String toZenalphCase(String str)
-	{
+	public static String toZenalphCase(String str) {
 		StringBuilder buffer = new StringBuilder(str);
 
-		for(int i=0;i<str.length();i++)
-		{
+		for (int i = 0; i < str.length(); i++) {
 			char c = str.charAt(i);
 
-			//　【！】～【～】の範囲
-			if(c <= 0x007E && 0x0021 <= c)
-			{
-				buffer.setCharAt(i, (char)(c + 0xFEE0));
+			// 【！】～【～】の範囲
+			if (c <= 0x007E && 0x0021 <= c) {
+				buffer.setCharAt(i, (char) (c + 0xFEE0));
 				continue;
 			};
 
 			// 半角スペース
-			if(c == 0x0020)
-			{
+			if (c == 0x0020) {
 				buffer.setCharAt(i, '\u3000');
 				continue;
 			};
@@ -290,55 +271,47 @@ public final class KanaUtil
 		return buffer.toString();
 	};
 
-	public static String toZenkakuCase(String str)
-	{
+	public static String toZenkakuCase(String str) {
 		int f = str.length();
 		StringBuilder buffer = new StringBuilder(str);
 
-		for(int i=0;i<f;i++)
-		{
+		for (int i = 0; i < f; i++) {
 			char c = str.charAt(i);
 
-			if(H2Z.containsKey(c)){
+			if (H2Z.containsKey(c)) {
 				buffer.setCharAt(i, H2Z.get(c));
-			} else if(c == 0x0020){
+			} else if (c == 0x0020) {
 				buffer.setCharAt(i, '\u3000');
-			} else if(c <= 0x007E && 0x0021 <= c) {
-				buffer.setCharAt(i, (char)(c + 0xFEE0));
+			} else if (c <= 0x007E && 0x0021 <= c) {
+				buffer.setCharAt(i, (char) (c + 0xFEE0));
 			};
 
-			if
-			(
-					(0x304B <= c && c <= 0x3062 && (c % 2 == 1)) ||
-					(0x30AB <= c && c <= 0x30C2 && (c % 2 == 1)) ||
-					(0x3064 <= c && c <= 0x3069 && (c % 2 == 0)) ||
-					(0x30C4 <= c && c <= 0x30C9 && (c % 2 == 0))
-			)
-			{
-					char d = buffer.charAt(i+1);
-					buffer.setCharAt(i, (char)(c + ((d == '\u309B') ? 1 : 0 )));
-					if(c != buffer.charAt(i))
-					{
-							buffer = buffer.deleteCharAt(i+1);
-							f--;
-					};
-					continue;
+			if (
+			    (0x304B <= c && c <= 0x3062 && (c % 2 == 1)) ||
+			    (0x30AB <= c && c <= 0x30C2 && (c % 2 == 1)) ||
+			    (0x3064 <= c && c <= 0x3069 && (c % 2 == 0)) ||
+			    (0x30C4 <= c && c <= 0x30C9 && (c % 2 == 0))
+			) {
+                char d = buffer.charAt(i+1);
+                buffer.setCharAt(i, (char) (c + ((d == '\u309B') ? 1 : 0 )));
+                if (c != buffer.charAt(i)) {
+                    buffer = buffer.deleteCharAt(i + 1);
+                    f--;
+                };
+                continue;
 			};
 
-			if
-			(
-					(0x306F <= c && c <= 0x307D && (c % 3 == 0)) ||
-					(0x30CF <= c && c <= 0x30DD && (c % 3 == 0))
-			)
-			{
-					char d = buffer.charAt(i+1);
-					buffer.setCharAt(i, (char)(c + ((d == '\u309B') ? 1 : ((d == '\u309C') ? 2 : 0 ))));
-					if(c != buffer.charAt(i))
-					{
-							buffer = buffer.deleteCharAt(i+1);
-							f--;
-					};
-					continue;
+			if (
+                (0x306F <= c && c <= 0x307D && (c % 3 == 0)) ||
+                (0x30CF <= c && c <= 0x30DD && (c % 3 == 0))
+			) {
+                char d = buffer.charAt(i+1);
+                buffer.setCharAt(i, (char) (c + ((d == '\u309B') ? 1 : ((d == '\u309C') ? 2 : 0 ))));
+                if (c != buffer.charAt(i)) {
+                        buffer = buffer.deleteCharAt(i+1);
+                        f--;
+                };
+                continue;
 			};
 
 		};
@@ -346,26 +319,24 @@ public final class KanaUtil
 		return buffer.toString();
 	};
 
-	public static String toHankakuCase(String str)
-	{
+	public static String toHankakuCase(String str) {
 		int f = str.length();
 		char[] chars = {0xFF9E, 0xFF9F};
 		StringBuilder buffer = new StringBuilder();
 
-		for(int i=0;i<f;i++)
-		{
+		for (int i = 0; i < f; i++) {
 			char c = str.charAt(i);
 
-			if(Z2H.containsKey(c)){
+			if (Z2H.containsKey(c)) {
 				buffer.append(Z2H.get(c));
-			} else if(0x30AB <= c && c <= 0x30C9){
-				buffer.append(Z2H.get((char)(c - 1))).append('\uFF9E');
-			} else if(c == 0x3000) {
+			} else if (0x30AB <= c && c <= 0x30C9) {
+				buffer.append(Z2H.get((char) (c - 1))).append('\uFF9E');
+			} else if (c == 0x3000) {
 				buffer.append('\u0020');
-			} else if(0x30CF <= c && c <= 0x30DD) {
-				buffer.append(Z2H.get((char)(c - c % 3))).append(chars[c % 3 - 1]);
-			} else if(0xFF01 <= c && c <= 0xFF5E) {
-				buffer.append((char)(c - 0xFEE0));
+			} else if (0x30CF <= c && c <= 0x30DD) {
+				buffer.append(Z2H.get((char) (c - c % 3))).append(chars[c % 3 - 1]);
+			} else if (0xFF01 <= c && c <= 0xFF5E) {
+				buffer.append((char) (c - 0xFEE0));
 			} else {
 				buffer.append(c);
 			};
@@ -374,10 +345,8 @@ public final class KanaUtil
 		return buffer.toString();
 	};
 
-	public static String convert(String str, KanaUtil.Type type)
-	{
-		switch(type)
-		{
+	public static String convert(String str, KanaUtil.Type type) {
+		switch (type) {
 			case ZENKAKU:
 				return toZenkakuCase(str);
 			case HANKAKU:
