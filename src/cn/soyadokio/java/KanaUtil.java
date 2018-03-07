@@ -158,9 +158,9 @@ public final class KanaUtil {
 			if (Z2H.containsKey(c)){
 				buffer.append(Z2H.get(c));
 			} else if (0x30AB <= c && c <= 0x30C9){
-				buffer.append(Z2H.get((char)(c - 1))).append('\uFF9E');
+				buffer.append(Z2H.get((char) (c - 1))).append('\uFF9E');
 			} else if (0x30CF <= c && c <= 0x30DD) {
-				buffer.append(Z2H.get((char)(c - c % 3))).append(chars[c % 3 - 1]);
+				buffer.append(Z2H.get((char) (c - c % 3))).append(chars[c % 3 - 1]);
 			} else {
 				buffer.append(c);
 			};
@@ -292,7 +292,7 @@ public final class KanaUtil {
 			    (0x3064 <= c && c <= 0x3069 && (c % 2 == 0)) ||
 			    (0x30C4 <= c && c <= 0x30C9 && (c % 2 == 0))
 			) {
-                char d = buffer.charAt(i+1);
+                char d = buffer.charAt(i + 1);
                 buffer.setCharAt(i, (char) (c + ((d == '\u309B') ? 1 : 0 )));
                 if (c != buffer.charAt(i)) {
                     buffer = buffer.deleteCharAt(i + 1);
@@ -305,11 +305,11 @@ public final class KanaUtil {
                 (0x306F <= c && c <= 0x307D && (c % 3 == 0)) ||
                 (0x30CF <= c && c <= 0x30DD && (c % 3 == 0))
 			) {
-                char d = buffer.charAt(i+1);
+                char d = buffer.charAt(i + 1);
                 buffer.setCharAt(i, (char) (c + ((d == '\u309B') ? 1 : ((d == '\u309C') ? 2 : 0 ))));
                 if (c != buffer.charAt(i)) {
-                        buffer = buffer.deleteCharAt(i+1);
-                        f--;
+                    buffer = buffer.deleteCharAt(i + 1);
+                    f--;
                 };
                 continue;
 			};
