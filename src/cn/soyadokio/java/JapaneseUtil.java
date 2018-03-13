@@ -3,7 +3,7 @@ package cn.soyadokio.java;
 import java.util.*;
 
 // [From] https://github.com/shogo4405/KanaXS/
-public final class KanaUtil {
+public final class JapaneseUtil {
 
     // 半角カタカナを全角カタカナにするマッピング
     private static final Map<Character, Character> H2Z = new HashMap<Character, Character>();
@@ -140,7 +140,7 @@ public final class KanaUtil {
      * コンストラクタ
      * ユーティリティクラスのためコンストラクタは、private
      */
-    private KanaUtil() {
+    private JapaneseUtil() {
     };
 
     /**
@@ -345,7 +345,7 @@ public final class KanaUtil {
         return buffer.toString();
     };
 
-    public static String convert(String str, KanaUtil.Type type) {
+    public static String convert(String str, JapaneseUtil.Type type) {
         switch (type) {
             case ZENKAKU:
                 return toZenkakuCase(str);
