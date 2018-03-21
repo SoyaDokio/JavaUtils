@@ -1,4 +1,4 @@
-package cn.soyadokio.ida.utils;
+package cn.soyadokio.java;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
