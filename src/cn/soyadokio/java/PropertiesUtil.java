@@ -8,7 +8,7 @@ import java.util.Properties;
 public class PropertiesUtil {
     
     private static final String CONFIG_PATH = "config/configfile.properties";
-    private static Properties properties;
+    private static Properties properties = new Properties();
     
     static {
         /* 为便于热修改将代码从static块提到方法init() */
