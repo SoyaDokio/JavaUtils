@@ -1,388 +1,199 @@
-package com.bpf.base.util;
+package cn.soyadokio.util;
 
-import java.io.OutputStream;
-import java.lang.reflect.Method;
-import java.text.SimpleDateFormat;
-import java.util.Collection;
-import java.util.Date;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFCellStyle;
-import org.apache.poi.hssf.usermodel.HSSFClientAnchor;
-import org.apache.poi.hssf.usermodel.HSSFFont;
-import org.apache.poi.hssf.usermodel.HSSFPatriarch;
-import org.apache.poi.hssf.usermodel.HSSFRichTextString;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.hssf.util.HSSFColor;
-import org.apache.poi.hssf.util.Region;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-public class ExcelUitl<T> {
+/**
+ * Excel 工具类
+ * @author SoyaDokio
+ * @date   2020-07-24
+ */
+public class ExcelUtils {
 
-    /**
-     * 导出Excel的方法
-     *
-     * @param title
-     *            excel中的sheet名称
-     * @param headers
-     *            表头
-     * @param result
-     *            结果集
-     * @param out
-     *            输出流
-     * @param pattern
-     *            时间格式
-     * @throws Exception
-     */
-    @SuppressWarnings("deprecation")
-    public void exportoExcel(String title, String[] headers, String[] columns, Collection<T> result, OutputStream out,
-            String pattern) throws Exception {
-
-        // 声明一个工作薄
-        HSSFWorkbook workbook = new HSSFWorkbook();
-        // 生成一个表格
-        HSSFSheet sheet = workbook.createSheet(title);
-        // 设置表格默认列宽度为20个字节
-        sheet.setDefaultColumnWidth((short) 20);
-
-        // 生成一个样式
-        HSSFCellStyle style = workbook.createCellStyle();
-        // 设置单元格背景色，设置单元格背景色以下两句必须同时设置
-        style.setFillForegroundColor(HSSFColor.GREY_25_PERCENT.index); // 设置填充色
-        style.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);// 设置填充样式
-
-         // 设置单元格上、下、左、右的边框线
-        style.setBorderBottom(HSSFCellStyle.BORDER_THIN);
-        style.setBorderLeft(HSSFCellStyle.BORDER_THIN);
-        style.setBorderRight(HSSFCellStyle.BORDER_THIN);
-        style.setBorderTop(HSSFCellStyle.BORDER_THIN);
-        // 设置居中
-        style.setAlignment(HSSFCellStyle.ALIGN_CENTER);
-        // 生成一个字体
-        HSSFFont font = workbook.createFont();
-        //font.setColor(HSSFColor.VIOLET.index);
-        // font.setFontHeightInPoints((short) 12);
-        font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
-        // 把字体应用到当前的样式
-        style.setFont(font);
-
-        // 指定当单元格内容显示不下时自动换行
-        style.setWrapText(true);
-
-        // 声明一个画图的顶级管理器
-        HSSFPatriarch patriarch = sheet.createDrawingPatriarch();
-
-        // 以下可以用于设置导出的数据的样式
-
-    /*  // 生成并设置另一个样式
-        HSSFCellStyle style2 = workbook.createCellStyle();
-        style2.setFillForegroundColor(HSSFColor.LIGHT_YELLOW.index);
-        style2.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
-        style2.setBorderBottom(HSSFCellStyle.BORDER_THIN);
-        style2.setBorderLeft(HSSFCellStyle.BORDER_THIN);
-        style2.setBorderRight(HSSFCellStyle.BORDER_THIN);
-        style2.setBorderTop(HSSFCellStyle.BORDER_THIN);
-        style2.setAlignment(HSSFCellStyle.ALIGN_CENTER);
-        style2.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER); //
-        // 生成另一个字体
-        HSSFFont font2 = workbook.createFont();
-        font2.setBoldweight(HSSFFont.BOLDWEIGHT_NORMAL); // 把字体应用到当前的样式
-        style2.setFont(font2); //
-        //声明一个画图的顶级管理器
-        HSSFPatriarch patriarch2 =sheet.createDrawingPatriarch();*/
-
-        // 定义注释的大小和位置,详见文档 HSSFComment comment = patriarch.createComment(new
-        // HSSFClientAnchor(0, 0, 0, 0, (short) 4, 2, (short) 6, 5)); // 设置注释内容
-        // comment.setString(new HSSFRichTextString("可以在POI中添加注释！")); //
-        // 设置注释作者，当鼠标移动到单元格上是可以在状态栏中看到该内容. comment.setAuthor("leno");
-
-        // 产生表格标题行
-        // 表头的样式
-        HSSFCellStyle titleStyle = workbook.createCellStyle();// 创建样式对象
-        titleStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER_SELECTION);// 水平居中
-        titleStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);// 垂直居中
-        // 设置字体
-        HSSFFont titleFont = workbook.createFont(); // 创建字体对象
-        titleFont.setFontHeightInPoints((short) 15); // 设置字体大小
-        titleFont.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);// 设置粗体
-        // titleFont.setFontName("黑体"); // 设置为黑体字
-        titleStyle.setFont(titleFont);
-
-        sheet.addMergedRegion(new Region(0, (short) 0, 0, (short) (headers.length - 1)));// 指定合并区域
-        HSSFRow rowHeader = sheet.createRow(0);
-        HSSFCell cellHeader = rowHeader.createCell((short) 0); // 只能往第一格子写数据，然后应用样式，就可以水平垂直居中
-        HSSFRichTextString textHeader = new HSSFRichTextString(title);
-        cellHeader.setCellStyle(titleStyle);
-        cellHeader.setCellValue(textHeader);
-
-        HSSFRow row = sheet.createRow(1);
-        for (int i = 0; i < headers.length; i++) {
-            HSSFCell cell = row.createCell((short) i);
-            cell.setCellStyle(style);
-            HSSFRichTextString text = new HSSFRichTextString(headers[i]);
-            cell.setCellValue(text);
-        }
-        // 遍历集合数据，产生数据行
-        if (result != null) {
-            int index = 2;
-            for (T t : result) {
-                // Field[] fields = t.getClass().getDeclaredFields();
-                row = sheet.createRow(index);
-                index++;
-                for (short i = 0; i < columns.length; i++) {
-                    HSSFCell cell = row.createCell(i);
-                    // Field field = fields[i];
-                    // String fieldName = field.getName();
-                    String fieldName = columns[i];
-                    String getMethodName = "get" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
-                    Class tCls = t.getClass();
-                    Method getMethod = tCls.getMethod(getMethodName, new Class[] {});
-                    // getMethod.getReturnType().isInstance(obj);
-                    Object value = getMethod.invoke(t, new Class[] {});
-                    String textValue = null;
-                    if (value == null) {
-                        textValue = "";
-                    } else if (value instanceof Date) {
-                        Date date = (Date) value;
-                        SimpleDateFormat sdf = new SimpleDateFormat(pattern);
-                        textValue = sdf.format(date);
-                    } else if (value instanceof byte[]) {
-                        // 有图片时，设置行高为60px;
-                        row.setHeightInPoints(60);
-                        // 设置图片所在列宽度为80px,注意这里单位的一个换算
-                        sheet.setColumnWidth(i, (short) (35.7 * 80));
-                        // sheet.autoSizeColumn(i);
-                        byte[] bsValue = (byte[]) value;
-                        HSSFClientAnchor anchor = new HSSFClientAnchor(0, 0, 1023, 255, (short) 6, index, (short) 6,
-                                index);
-                        anchor.setAnchorType(2);
-                        patriarch.createPicture(anchor, workbook.addPicture(bsValue, HSSFWorkbook.PICTURE_TYPE_JPEG));
-                    } else {
-                        // 其它数据类型都当作字符串简单处理
-                        textValue = value.toString();
-                    }
-
-                    if (textValue != null) {
-                        Pattern p = Pattern.compile("^//d+(//.//d+)?$");
-                        Matcher matcher = p.matcher(textValue);
-                        if (matcher.matches()) {
-                            // 是数字当作double处理
-                            cell.setCellValue(Double.parseDouble(textValue));
-                        } else {
-                            HSSFRichTextString richString = new HSSFRichTextString(textValue);
-                            // HSSFFont font3 = workbook.createFont();
-                            // font3.setColor(HSSFColor.BLUE.index);
-                            // richString.applyFont(font3);
-                            cell.setCellValue(richString);
-                        }
-                    }
-                }
-            }
-        }
-        workbook.write(out);
-        out.flush();
-        out.close();
-
-    }
-
+    private static List<ArrayList<String>> sheetData = new ArrayList<ArrayList<String>>();
 
     /**
-     * 带分类标题导出Excel的方法
-     *
-     * @param title
-     *            excel中的sheet名称
-     * @param headers
-     *            表头
-     * @param result
-     *            结果集
-     * @param out
-     *            输出流
-     * @param pattern
-     *            时间格式
+     * 获取工作表的类型，是2003格式（xls）还是2007格式（xlsx）
+     * @param filePath
+     * @return
+     */
+    private static String getFileType(String filePath) {
+        return filePath.substring(filePath.lastIndexOf(".") + 1).toLowerCase();
+    }
+
+    /**
+     * 获取 IO 流
+     * @param filePath
+     * @return
      * @throws Exception
      */
-    @SuppressWarnings("deprecation")
-    public void exportoExcel1(String title, String[] header_2, String[] header_cate, int[] cate_num, String[] header_1, String[] columns, Collection<T> result, OutputStream out,
-            String pattern) throws Exception {
-
-        // 声明一个工作薄
-        HSSFWorkbook workbook = new HSSFWorkbook();
-        // 生成一个表格
-        HSSFSheet sheet = workbook.createSheet(title);
-        // 设置表格默认列宽度为20个字节
-        sheet.setDefaultColumnWidth((short) 20);
-
-        // 生成一个样式
-        HSSFCellStyle style = workbook.createCellStyle();
-        // 设置单元格背景色，设置单元格背景色以下两句必须同时设置
-        style.setFillForegroundColor(HSSFColor.GREY_25_PERCENT.index); // 设置填充色
-        style.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);// 设置填充样式
-
-         // 设置单元格上、下、左、右的边框线
-        style.setBorderBottom(HSSFCellStyle.BORDER_THIN);
-        style.setBorderLeft(HSSFCellStyle.BORDER_THIN);
-        style.setBorderRight(HSSFCellStyle.BORDER_THIN);
-        style.setBorderTop(HSSFCellStyle.BORDER_THIN);
-        // 设置居中
-        style.setAlignment(HSSFCellStyle.ALIGN_CENTER);
-        // 生成一个字体
-        HSSFFont font = workbook.createFont();
-        //font.setColor(HSSFColor.VIOLET.index);
-        // font.setFontHeightInPoints((short) 12);
-        font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
-        // 把字体应用到当前的样式
-        style.setFont(font);
-
-        // 指定当单元格内容显示不下时自动换行
-        style.setWrapText(true);
-
-        // 声明一个画图的顶级管理器
-        HSSFPatriarch patriarch = sheet.createDrawingPatriarch();
-
-        // 以下可以用于设置导出的数据的样式
-
-    /*  // 生成并设置另一个样式
-        HSSFCellStyle style2 = workbook.createCellStyle();
-        style2.setFillForegroundColor(HSSFColor.LIGHT_YELLOW.index);
-        style2.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
-        style2.setBorderBottom(HSSFCellStyle.BORDER_THIN);
-        style2.setBorderLeft(HSSFCellStyle.BORDER_THIN);
-        style2.setBorderRight(HSSFCellStyle.BORDER_THIN);
-        style2.setBorderTop(HSSFCellStyle.BORDER_THIN);
-        style2.setAlignment(HSSFCellStyle.ALIGN_CENTER);
-        style2.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER); //
-        // 生成另一个字体
-        HSSFFont font2 = workbook.createFont();
-        font2.setBoldweight(HSSFFont.BOLDWEIGHT_NORMAL); // 把字体应用到当前的样式
-        style2.setFont(font2); //
-        //声明一个画图的顶级管理器
-        HSSFPatriarch patriarch2 =sheet.createDrawingPatriarch();*/
-
-        // 定义注释的大小和位置,详见文档 HSSFComment comment = patriarch.createComment(new
-        // HSSFClientAnchor(0, 0, 0, 0, (short) 4, 2, (short) 6, 5)); // 设置注释内容
-        // comment.setString(new HSSFRichTextString("可以在POI中添加注释！")); //
-        // 设置注释作者，当鼠标移动到单元格上是可以在状态栏中看到该内容. comment.setAuthor("leno");
-
-        // 产生表格标题行
-        // 表头的样式
-        HSSFCellStyle titleStyle = workbook.createCellStyle();// 创建样式对象
-        titleStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER_SELECTION);// 水平居中
-        titleStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);// 垂直居中
-        // 设置字体
-        HSSFFont titleFont = workbook.createFont(); // 创建字体对象
-        titleFont.setFontHeightInPoints((short) 15); // 设置字体大小
-        titleFont.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);// 设置粗体
-        // titleFont.setFontName("黑体"); // 设置为黑体字
-        titleStyle.setFont(titleFont);
-        //第一行
-        CellRangeAddress cra=new CellRangeAddress(0, (short) 0, 0, (short) (columns.length - 1));
-        sheet.addMergedRegion(cra);
-
-        Row row = sheet.createRow(0);
-        Cell row0=row.createCell(0);
-        row0.setCellValue(title);
-        row0.setCellStyle(titleStyle);
-
-
-
-        for(int i=0; i<header_2.length; i++){
-            cra=new CellRangeAddress(1, 2, i, i);
-            sheet.addMergedRegion(cra);
+    private static FileInputStream getStream(String filePath) throws FileNotFoundException {
+        FileInputStream fi = null;
+        try {
+            fi = new FileInputStream(filePath);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         }
-        int sum1 = 0;
-        int sum2 = 0;
-        for(int i=0; i<header_cate.length; i++){
-            sum1 += cate_num[i];
-            cra=new CellRangeAddress(1, 1, 3+sum2, 2+sum1);
-            sheet.addMergedRegion(cra);
-            sum2 += cate_num[i];
+        if (fi == null) {
+            throw new FileNotFoundException("文件不存在 - " + filePath);
+        }
+        return fi;
+    }
+
+    /**
+     * 通过 sheet 名称获取指定工作簿的指定 sheet 对象
+     * @param filePath
+     * @param sheetName
+     * @return
+     */
+    private static Sheet getSheet(String filePath, String sheetName) {
+        Sheet sheet = null;
+        String fileType = getFileType(filePath);
+        if ("xls".equals(fileType)) {
+            HSSFWorkbook _2003wookbook = null;
+            try {
+                _2003wookbook = new HSSFWorkbook(getStream(filePath));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            sheet = _2003wookbook.getSheet(sheetName);
+        }
+        if ("xlsx".equals(fileType)) {
+            XSSFWorkbook _2007wookbook = null;
+            try {
+                _2007wookbook = new XSSFWorkbook(getStream(filePath));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            sheet = _2007wookbook.getSheet(sheetName);
+        }
+        return sheet;
+    }
+
+    /**
+     * 通过 sheet 索引获取指定工作簿的指定 sheet 对象
+     * @param filePath
+     * @param sheetIndex
+     * @return
+     */
+    private static Sheet getSheet(String filePath, int sheetIndex) {
+        Sheet sheet = null;
+        String fileType = getFileType(filePath);
+        if ("xls".equals(fileType)) {
+            HSSFWorkbook _2003wookbook = null;
+            try {
+                _2003wookbook = new HSSFWorkbook(getStream(filePath));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            sheet = _2003wookbook.getSheetAt(sheetIndex);
+        }
+        if ("xlsx".equals(fileType)) {
+            XSSFWorkbook _2007wookbook = null;
+            try {
+                _2007wookbook = new XSSFWorkbook(getStream(filePath));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            sheet = _2007wookbook.getSheetAt(sheetIndex);
+        }
+        return sheet;
+    }
+
+    /**
+     * 获取指定 sheet 的数据
+     * @param sheet
+     * @return
+     * @throws Exception
+     */
+    private static List<ArrayList<String>> getSheetData(Sheet sheet) {
+        if (sheet == null) {
+            return null;
         }
 
-        row = sheet.createRow(1);
-        for(int i=0; i<header_2.length; i++){
-            final Cell cell = row.createCell(i);
-            cell.setCellValue(header_2[i]);
-        }
-
-        int sum = 0;
-        for(int i=0; i<header_cate.length; i++){
-            final Cell cell = row.createCell(3+sum);
-            cell.setCellValue(header_cate[i]);
-            sum += cate_num[i];
-        }
-
-        row = sheet.createRow(2);
-        for(int i=0; i<header_1.length; i++){
-            final Cell cell = row.createCell(i+3);
-            cell.setCellValue(header_1[i]);
-        }
-
-        // 遍历集合数据，产生数据行
-        if (result != null) {
-            int index = 3;
-            for (T t : result) {
-                // Field[] fields = t.getClass().getDeclaredFields();
-                row = sheet.createRow(index);
-                index++;
-                for (short i = 0; i < columns.length; i++) {
-                    Cell cell = row.createCell(i);
-                    // Field field = fields[i];
-                    // String fieldName = field.getName();
-                    String fieldName = columns[i];
-                    String getMethodName = "get" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
-                    Class tCls = t.getClass();
-                    Method getMethod = tCls.getMethod(getMethodName, new Class[] {});
-                    // getMethod.getReturnType().isInstance(obj);
-                    Object value = getMethod.invoke(t, new Class[] {});
-                    String textValue = null;
-                    if (value == null) {
-                        textValue = "";
-                    } else if (value instanceof Date) {
-                        Date date = (Date) value;
-                        SimpleDateFormat sdf = new SimpleDateFormat(pattern);
-                        textValue = sdf.format(date);
-                    } else if (value instanceof byte[]) {
-                        // 有图片时，设置行高为60px;
-                        row.setHeightInPoints(60);
-                        // 设置图片所在列宽度为80px,注意这里单位的一个换算
-                        sheet.setColumnWidth(i, (short) (35.7 * 80));
-                        // sheet.autoSizeColumn(i);
-                        byte[] bsValue = (byte[]) value;
-                        HSSFClientAnchor anchor = new HSSFClientAnchor(0, 0, 1023, 255, (short) 6, index, (short) 6,
-                                index);
-                        anchor.setAnchorType(2);
-                        patriarch.createPicture(anchor, workbook.addPicture(bsValue, HSSFWorkbook.PICTURE_TYPE_JPEG));
-                    } else {
-                        // 其它数据类型都当作字符串简单处理
-                        textValue = value.toString();
-                    }
-
-                    if (textValue != null) {
-                        Pattern p = Pattern.compile("^//d+(//.//d+)?$");
-                        Matcher matcher = p.matcher(textValue);
-                        if (matcher.matches()) {
-                            // 是数字当作double处理
-                            cell.setCellValue(Double.parseDouble(textValue));
-                        } else {
-                            HSSFRichTextString richString = new HSSFRichTextString(textValue);
-                            // HSSFFont font3 = workbook.createFont();
-                            // font3.setColor(HSSFColor.BLUE.index);
-                            // richString.applyFont(font3);
-                            cell.setCellValue(richString);
-                        }
-                    }
+        int rowMax = sheet.getLastRowNum() + 1;
+        for (int i = 0; i < rowMax; i++) {
+            Row row = sheet.getRow(i);
+            if (row == null) {
+                sheetData.add(new ArrayList<String>());
+            } else {
+                ArrayList<String> rowData = new ArrayList<String>();
+                int cellMax = row.getLastCellNum();
+                for (int j = 0; j < cellMax; j++) {
+                    Cell cell = row.getCell(j);
+                    String value = getCellDataAsString(cell);
+                    rowData.add(value);
                 }
+                sheetData.add(rowData);
             }
         }
-        workbook.write(out);
-        out.flush();
-        out.close();
-
+        return sheetData;
     }
+
+    /**
+     * 根据 sheet 索引获取指定 sheet 的数据
+     * @param filePath
+     * @param sheetIndex
+     * @return
+     * @throws Exception
+     */
+    public static List<ArrayList<String>> getSheetData(String filePath, int sheetIndex) {
+        Sheet sheet = getSheet(filePath, sheetIndex);
+        return getSheetData(sheet);
+    }
+
+    /**
+     * 根据 sheet 名称获取指定 sheet 的数据
+     * @param filePath
+     * @param sheetName
+     * @return
+     * @throws Exception
+     */
+    public static List<ArrayList<String>> getSheetData(String filePath, String sheetName) {
+        Sheet sheet = getSheet(filePath, sheetName);
+        return getSheetData(sheet);
+    }
+
+    /**
+     * 获取单元格的字符串形式的值
+     * @param cell
+     * @return
+     */
+    private static String getCellDataAsString(Cell cell) {
+        if (cell == null) {
+            return "";
+        }
+        String cellData = null;
+        switch (cell.getCellType()) {
+        case Cell.CELL_TYPE_BLANK:
+            cellData = "";
+            break;
+        case Cell.CELL_TYPE_STRING:
+            cellData = cell.getStringCellValue();
+            break;
+        case Cell.CELL_TYPE_NUMERIC:
+        case Cell.CELL_TYPE_FORMULA:
+        case Cell.CELL_TYPE_BOOLEAN:
+            cell.setCellType(Cell.CELL_TYPE_STRING);
+            cellData = cell.getStringCellValue();
+            break;
+        case Cell.CELL_TYPE_ERROR:
+            // empty
+        }
+        return cellData;
+    }
+
 }
